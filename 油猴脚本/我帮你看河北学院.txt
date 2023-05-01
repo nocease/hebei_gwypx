@@ -1,0 +1,97 @@
+// ==UserScript==
+// @name         我帮你看河北学院
+// @namespace    http://hebgb.gwypx.com.cn/
+// @version      20220619
+// @description  科技改变生活！恢复老本行第一作品，本代码仅供交流学习，下载后请在24小时内删除，不得用于违规违法用途。
+// @author       不停止_nocease
+// @match        http://hebgb.gwypx.com.cn/*
+// @icon         http://hebgb.gwypx.com.cn/favicon.ico
+// @grant        GM_setValue
+// @grant        GM_getValue
+// ==/UserScript==
+
+//定义变量
+var video1;//定义播放器
+var href1 = location.href;//获取当前页面地址
+
+//如果进入了某个课程页面，就自动开始学习最上面的一节课（存在的bug是全部学完了也会从头继续学）
+if(href1.toString().includes("hebgb.gwypx.com.cn/student/class_detail_course.do")){
+    //将课程列表页面地址写入缓存
+    GM_setValue("class_detail_course", href1);
+    //获取课程列表中最上面的课程编号
+    let id=document.getElementsByClassName("hover_btn")[0].onclick.toString().substr(33,9);
+    //创建一个按钮
+    creatElement();
+    //选择一个按钮开始学习
+    document.getElementById("nocease_div1").onclick=function(){
+        //打开视频学习页面，传参16倍速
+        window.open("http://hebgb.gwypx.com.cn/portal/study_play.do?id="+id+"&beisu="+16);
+    }
+    document.getElementById("nocease_div2").onclick=function(){
+        //打开视频学习页面，传参1.5倍速
+        window.open("http://hebgb.gwypx.com.cn/portal/study_play.do?id="+id+"&beisu="+1.5);
+    }
+    document.getElementById("nocease_div3").onclick=function(){
+        //打开视频学习页面，传参3倍速
+        window.open("http://hebgb.gwypx.com.cn/portal/study_play.do?id="+id+"&beisu="+3);
+    }
+    document.getElementById("nocease_div4").onclick=function(){
+        //打开视频学习页面，传参5倍速
+        window.open("http://hebgb.gwypx.com.cn/portal/study_play.do?id="+id+"&beisu="+5);
+    }
+
+    //如果当前页面带有传参，就自动播放下个视频
+    if(GetQueryString("beisu")!=null){
+        location.href="http://hebgb.gwypx.com.cn/portal/study_play.do?id="+id+"&beisu="+GetQueryString("beisu");
+    }
+
+}
+
+//打开视频播放页面后，自动点击开始学习，播完后自动打开下一集
+if(href1.toString().includes("hebgb.gwypx.com.cn/portal/study_play.do")){
+    //如果点击了自动播放才执行
+    if(GetQueryString("beisu")!=null){
+        //延迟半秒再开始，等待页面加载
+        setTimeout(function(){
+            document.getElementsByClassName("user_choise")[0].click();//自动点击开始学习
+            document.getElementsByClassName("first_title")[0].click();//自动点击目录上第一集
+            video1 = document.getElementById("course_player");//获取当前页面播放器
+            video1.volume = 0;//静音
+            video1.play(1);//开始播放
+            video1.playbackRate = GetQueryString("beisu")||1; //开启倍速播放
+        },500)
+
+        //每3秒判断一次是否播完
+        setInterval(function(){
+            if(video1.ended){
+                //如果播完跳回课程列表页面，传递设置的倍速参数，并自动下一集
+                location.href=GM_getValue("class_detail_course", href1)+"&beisu="+GetQueryString("beisu");
+            }
+        },3000);
+    }
+}
+
+//创建一个按钮
+function creatElement(){
+    let nocease_div = document.createElement("div");
+    nocease_div.innerHTML ='<div style="width: 260px;height: 400px;position:fixed;background-color:blue;top:50px;color: aliceblue;left: 3px;;"> <br>本代码仅供交流学习，下载后请在24小时内删除，不得用于违规违法用途。 <div id="nocease_div1" style="background-color: beige;color: black;position: relative;width: 215px;left: 15px;top: 20px;cursor: pointer;"> 点击自动开始学习（16倍速） </div> <br> <div id="nocease_div2" style="background-color: beige;color: black;position: relative;width: 215px;left: 15px;top: 20px;cursor: pointer;"> 点击自动开始学习（1.5倍速） </div> <br> <div id="nocease_div3" style="background-color: beige;color: black;position: relative;width: 215px;left: 15px;top: 20px;cursor: pointer;"> 点击自动开始学习（3.0倍速） </div> <br> <div id="nocease_div4" style="background-color: beige;color: black;position: relative;width: 215px;left: 15px;top: 20px;cursor: pointer;"> 点击自动开始学习（5.0倍速） </div> <br> <div style="position: relative;top: 20px;left: 3px;"> &nbsp;&nbsp;网站自身只支持1.5倍速，再快不知道会不会封号；<br> &nbsp;&nbsp;要根据网速设置，如果网速太慢视频加载跟不上，倍速调大也没用。 </div> </div>';
+    document.getElementsByTagName("body")[0].append(nocease_div);
+}
+
+//默认情况下, chrome 只允许 window.close 关闭 window.open 打开的窗口,所以要用window.open命令,在原地网页打开自身窗口再关上,就可以成功关闭了
+function closeWin() {
+    try {
+        window.opener = window;
+        var win = window.open("","_self");
+        win.close();
+        top.close();
+    } catch (e) {
+    }
+}
+
+//js获取页面传参
+function GetQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)","i");
+    var r = window.location.search.substr(1).match(reg);
+    if (r!=null) return (r[2]); return null;
+}
