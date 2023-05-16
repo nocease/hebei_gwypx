@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Drawing;
 using System.Diagnostics;
+using System.Net;
 
 namespace WindowsFormsApp1
 {
@@ -144,6 +145,14 @@ namespace WindowsFormsApp1
                 label3.Text = "未看完的课程还有：" + s + "节";
                 return s;
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Form2 form2 = new Form2();
+            form2.session = session;
+            this.Hide();
+            form2.Show();
         }
     }
 }
