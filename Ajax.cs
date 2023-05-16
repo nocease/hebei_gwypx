@@ -17,6 +17,7 @@ namespace WindowsFormsApp1
 
         public string MakeRequest()
         {
+            string result = "";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
             request.Method = Method;
             request.ContentType = ContentType;
@@ -57,7 +58,7 @@ namespace WindowsFormsApp1
             Cookie cookie2 = new Cookie("SESSION", cookie.Value, "/");
             cookieContainer.Add(uri, cookie);
             request.CookieContainer = cookieContainer;
-
+            
             if (!string.IsNullOrEmpty(Body))
             {
                 byte[] data = Encoding.UTF8.GetBytes(Body);
@@ -66,14 +67,20 @@ namespace WindowsFormsApp1
                 stream.Write(data, 0, data.Length);
             }
 
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            string result;
-            using (Stream stream = response.GetResponseStream())
+            try
             {
-                StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                result = reader.ReadToEnd();
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                using (Stream stream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                    result = reader.ReadToEnd();
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
             return result;
         }
 

@@ -3,13 +3,9 @@ using System;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Drawing;
 using System.Diagnostics;
-using System.Net;
-using System.Security.Policy;
-using System.Net.Http;
 
 namespace WindowsFormsApp1
 {
