@@ -50,7 +50,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(188, 16);
             this.label1.TabIndex = 0;
-            this.label1.Text = "我帮你看网络学院_V2.0";
+            this.label1.Text = "我帮你看网络学院_V2.1";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // textBox1
